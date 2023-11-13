@@ -99,6 +99,10 @@ class _ExpenseListState extends State<ExpenseList> {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        15.0), // Kenar yuvarlatma özelliği
+                  ),
                   elevation: 4,
                   child: ListTile(
                     title: Text(expenses[index].name),
