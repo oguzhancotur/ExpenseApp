@@ -1,15 +1,16 @@
+//açılan ilk sayfa
 import 'package:expenseapp/models/expense.dart';
+import 'package:expenseapp/widgets/expense_item.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseList extends StatefulWidget {
-  const ExpenseList({Key? key, required List expenses}) : super(key: key);
+  const ExpenseList(() param0, {super.key});
 
   @override
-  _ExpenseListState createState() => _ExpenseListState();
+  State<ExpenseList> createState() => _ExpenseListState();
 }
 
 class _ExpenseListState extends State<ExpenseList> {
-  // dummy data
   final List<Expense> expenses = [
     Expense(
         name: "Adana Kebab",
@@ -61,80 +62,42 @@ class _ExpenseListState extends State<ExpenseList> {
         price: 500,
         date: DateTime.now(),
         category: Category.work),
-  ]; // firebase, veritabanı
+  ]; // Gerçek veritabanı kullanılacaksa bu veri yerine dinamik veri alınmalı
 
-  //List wiev kullanacagız
-
+  // Build metodu, widget'ın görünümünü oluşturur
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(
-          height: 210,
-          child: Padding(
-            padding: EdgeInsets.all(10.0),
+    // Ekranın ortasına yerleştirilmiş bir sütun oluştur
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Grafik veya başka bir görselleştirmeyi içerecek bir SizedBox ekleyin
+          const SizedBox(
+            height: 150,
+            child: Text("Chart"),
+          ),
+
+          // Harcamalar başlığını içerecek bir Padding ekleyin
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text(
-              "Chart",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
+              "Expenses",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ), // Harcamalar başlığı
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: expenses.length,
+              itemBuilder: (context, index) {
+                // Her bir gider öğesini gösterecek ExpenseItem widget'ını ekleyin
+                return ExpenseItem(expenses[index]);
+              },
             ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.all(7.0),
-          child: Text(
-            "Expense List",
-            style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: expenses.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        15.0), // Kenar yuvarlatma özelliği
-                  ),
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text(expenses[index].name),
-                    subtitle: Row(children: [
-                      Text(
-                        "Price = ",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 196, 15, 2),
-                            fontWeight: FontWeight.w800),
-                      ),
-                      Text(
-                        "${expenses[index].price.toString()}",
-                      ),
-                      Text(
-                        "€",
-                      ),
-                    ]),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: const Text(
-            "End of List",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700),
-          ),
-        ),
-      ],
+          )
+        ],
+      ),
     );
   }
 }
-//Topbar ekleme vs...
