@@ -1,14 +1,16 @@
+import 'package:expenseapp/pages/expense_list.dart';
 import 'package:expenseapp/pages/main_page.dart';
 import 'package:flutter/material.dart';
 
+// Single Responsibility
 void main() {
   runApp(
     MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            useMaterial3:
-                true), //User experiance ı düzeltir, üst kısımdaki renk farkını ortadan kaldırır.
-        //Genel olarak stilleri düzenler vs.
-        home: const MainPage()),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(useMaterial3: true),
+      home: const MainPage(),
+    ),
   );
 }
+
+// modelleme => üzerinde çalışılacak yapıların uygulamada nesne haline getirilmesi

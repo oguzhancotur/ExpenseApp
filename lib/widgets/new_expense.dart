@@ -1,131 +1,181 @@
+import 'package:expenseapp/models/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({Key? key}) : super(key: key);
+  const NewExpense({Key? key, required this.addExpenseList}) : super(key: key);
+
+  final Function(Expense) addExpenseList;
 
   @override
   _NewExpenseState createState() => _NewExpenseState();
 }
 
+//11:10
 class _NewExpenseState extends State<NewExpense> {
-  //Controller
+  // Controller
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
+  DateTime? _selectedDate;
+  Category _selectedCategory = Category.work;
 
-//Seçilen tarih, başlangıcta günümüz tarihiyle ayarlanıyor
-  DateTime _date = DateTime.now();
+  void _openDatePicker() async {
+    // DatePicker açmak.. ✅
+    // DatePicker'dan gelen değeri Text olarak yazdırmak
+    // built-in function
 
-  //Tarih değiştiğinde çağırılan fonksiyon
-  void changeDateText(DateTime date) {
+    // sync => bir işlem bitmeden diğerinin başlamadığı yapılar
+    // async => alt satıra geçmek için işlemin bitmesini beklemezler // await
+    DateTime now = DateTime.now();
+    DateTime oneYearAgo = DateTime(now.year - 1, now.month, now.day);
+
+    // 1 yıl öncesi ve bugün arasında kısıtlama
+    // then => async bir işlemin geri dönüş sağladığı anda çalışacak bloğunu tanımlar.
+    // showDatePicker(
+    //         context: context,
+    //         initialDate: now,
+    //         firstDate: oneYearAgo,
+    //         lastDate: now)
+    //     .then((value) {
+    //   print(value);
+    // });
+
+    // await => ilgili async işlemini bekle
+
+    // if(_selectedDate==null)
+    //    time=now
+    // else
+    //   time=_selectedDate
+    // 10:15
+    DateTime? selectedDate = await showDatePicker(
+        context: context,
+        initialDate: _selectedDate == null
+            ? now
+            : _selectedDate!, // eğer seçili tarih varsa onu kullan, yoksa günün tarihini kullan..
+        firstDate: oneYearAgo,
+        lastDate: now);
+
     setState(() {
-      _date = date;
+      _selectedDate = selectedDate;
     });
   }
 
-  //Kaydedilen tarihi tutmak için bir değişken tanımlanıyor
-  String _savedDate = "";
+  void _addNewExpense() {
+    final amount = double.tryParse(_amountController.text);
+    // parse, tryParse => parse değer nullsa hata fırlatır, tryParse değeri null olarak alır
+    if (amount == null ||
+        amount < 0 ||
+        _nameController.text.isEmpty ||
+        _selectedDate == null) {
+      /// hatalı durum
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: const Text("Validation Error"),
+              content: const Text("Please fill all blank areas."),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                    },
+                    child: const Text("Okay"))
+              ],
+            );
+          });
+    } else {
+      // valid bir değer
+      // listeye ekleme yapılması gereken nokta..
 
-  //Kategoriyi seçmek için bir değişken tanımlanıyor
-  String _category = "Select Category";
+      // Listeye eklenecek veriler kullanıcıdan alındı
+      Expense newExpense = Expense(
+          name: _nameController.text,
+          price: amount,
+          date: _selectedDate!,
+          category: _selectedCategory);
+
+      widget.addExpenseList(newExpense);
+
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           TextField(
-            controller:
-                _nameController, // her yazılan değişiklikte debug console da bir uyarı atar.
+            controller: _nameController,
             maxLength: 50,
             decoration: const InputDecoration(label: Text("Expense Name")),
           ),
-          TextField(
-            controller: _amountController,
-            keyboardType: TextInputType
-                .number, // her yazılan değişiklikte debug console da bir uyarı atar.
-            decoration:
-                const InputDecoration(label: Text("Amount"), prefixText: "€"),
-          ),
-          IconButton(
-              onPressed: () async {
-                //kullanıcıya tarih seçimini göstren pencereyi aç
-                var date = await showDatePicker(
-                  context: context,
-                  initialDate: _date,
-                  firstDate: DateTime(1900, 1, 1),
-                  lastDate: DateTime(2055, 12, 31),
-                );
-                //Eğer kullanıcı bir tarih seçerse tarihi güncelle
-                if (date != null) {
-                  changeDateText(date);
-                }
-                //Date Picker açmak
-              },
-              icon: const Icon(Icons.calendar_month)),
-          //Seçilen tarihi gösteren metin
-          Text(DateFormat.yMd().format(_date)),
-          //Kategori seçmek için acılan liste
-          DropdownButton<String>(
-            value: _category,
-            hint: const Text("Select Category"),
-            onChanged: (String? newValue) {
-              setState(() {
-                _category = newValue!;
-              });
-            },
-            items: <String>[
-              "Select Category", // Bu değer başlangıç değeri olarak kullanılıyor.
-              "Food",
-              "Education",
-              "Travel",
-              "Work",
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-
-          ElevatedButton(
-            onPressed: () {
-              print("Registration Successful : ${_nameController.text}");
-              setState(() {
-                _savedDate = DateFormat.yMd().format(_date);
-              });
-              // **Kaydedilen kategoriyi konsola yazdır**
-              print("Selected Category: $_category");
-            },
-            child: const Text("Save"),
-          ),
-          // Kaydedilen tarihi gösteren metin
-          // Kaydedilen tarihi bir Card widget'ına yerleştir
-
-          Card(
-            color: Color.fromARGB(255, 13, 126, 3),
-            child: ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Expend Name: ${_nameController.text}",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 255, 255, 255))),
-                  Text("Amount: ${_amountController.text} \€",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 255, 255, 255))),
-                  Text("Selected Date: $_savedDate",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 255, 255, 255))),
-                  // **Seçilen kategoriyi gösteren metin**
-                  Text("Selected Category: $_category",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 255, 255, 255))),
-                ],
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      label: Text("Amount"), prefixText: "₺"),
+                ),
               ),
-            ),
+              const SizedBox(
+                width: 30,
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    IconButton(
+                        onPressed: () => _openDatePicker(),
+                        icon: const Icon(Icons.calendar_month)),
+                    // Ternary Operator
+                    Text(_selectedDate == null
+                        ? "Tarih Seçiniz"
+                        : DateFormat.yMd().format(_selectedDate!)),
+                  ],
+                ),
+              ),
+            ],
+          ), // seçilen tarihi formatlayarak yazdırmak..
+          const SizedBox(
+            height: 40,
           ),
+          Row(
+            children: [
+              DropdownButton(
+                  value: _selectedCategory,
+                  items: Category.values.map((category) {
+                    return DropdownMenuItem(
+                        value: category, child: Text(category.name.toString()));
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      if (value != null) _selectedCategory = value;
+                    });
+                  })
+            ],
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Vazgeç")),
+              const SizedBox(
+                width: 30,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    _addNewExpense();
+                  },
+                  child: const Text("Kaydet")),
+            ],
+          )
         ],
       ),
     );

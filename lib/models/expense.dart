@@ -10,7 +10,7 @@ const categoryIcons = {
   Category.food: Icons.food_bank,
   Category.education: Icons.cast_for_education,
   Category.travel: Icons.car_rental,
-  Category.work: Icons.business,
+  Category.work: Icons.business
 };
 
 class Expense {
@@ -20,6 +20,7 @@ class Expense {
       required this.date,
       required this.category})
       : id = uuid.v4();
+  // ctor'da bir değeri almak yerine değer atamak
 
   final String id;
   final String name;
@@ -27,11 +28,19 @@ class Expense {
   final DateTime date;
   final Category category;
 
-  //getter method = bir değişken gibi davranır
-  //setter method = bir değişkenin değerini değiştirir
+  // getter method => bir değişken gibi davranır
+  // setter method => bir değişkenin değerini değiştiren method
 
   String get formattedDate {
     var formatter = DateFormat.yMd();
     return formatter.format(date);
   }
 }
+// e31d96a6-f15e-4787-ad2d-9d3965218523, Yemek, 50
+// a975e32a-999b-47ac-ae73-929a66dd216c, Yemek, 50
+// 28386049-6721-4bcb-adda-061a02020a42, Yemek, 50
+// uuid , guid => 
+// flutter'a paket ekleme
+
+// Enums
+// Enumerated Type
