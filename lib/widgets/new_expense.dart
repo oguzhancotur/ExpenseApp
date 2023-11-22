@@ -118,7 +118,7 @@ class _NewExpenseState extends State<NewExpense> {
                   controller: _amountController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                      label: Text("Amount"), prefixText: "₺"),
+                      label: Text("Amount"), prefixText: "€"),
                 ),
               ),
               const SizedBox(
@@ -132,7 +132,7 @@ class _NewExpenseState extends State<NewExpense> {
                         icon: const Icon(Icons.calendar_month)),
                     // Ternary Operator
                     Text(_selectedDate == null
-                        ? "Tarih Seçiniz"
+                        ? "Select Date"
                         : DateFormat.yMd().format(_selectedDate!)),
                   ],
                 ),
@@ -165,7 +165,7 @@ class _NewExpenseState extends State<NewExpense> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text("Vazgeç")),
+                  child: const Text("Cancel")),
               const SizedBox(
                 width: 30,
               ),
@@ -173,7 +173,7 @@ class _NewExpenseState extends State<NewExpense> {
                   onPressed: () {
                     _addNewExpense();
                   },
-                  child: const Text("Kaydet")),
+                  child: const Text("Save")),
             ],
           )
         ],

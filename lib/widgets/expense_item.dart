@@ -19,7 +19,7 @@ class ExpenseItem extends StatelessWidget {
             Row(
               children: [
                 // String Interpolation
-                Text("${expense.price.toStringAsFixed(2)} ₺"), // Alt GR + T
+                Text("${expense.price.toStringAsFixed(2)} €"), // Alt GR + T
                 const Spacer(),
                 Icon(categoryIcons[expense.category]),
                 const SizedBox(width: 8),
